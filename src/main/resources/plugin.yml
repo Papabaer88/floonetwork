@@ -1,0 +1,14 @@
+name: FlooNetwork
+version: '1.0.0'
+main: de.papabaer.floonetwork.FlooNetworkPlugin
+api-version: '1.21'
+description: Floo Network for Paper without a resource pack.
+commands:
+  floo:
+    description: Manage the Floo network
+    usage: /floo <create|remove|tp|list|powder|help> [name]
+    permission: floonetwork.command
+permissions:
+  floonetwork.command:
+    description: Allows access to floo commands.
+    default: true
