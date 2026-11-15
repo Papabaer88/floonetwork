@@ -1,13 +1,13 @@
 package de.papabaer.floonetwork;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,15 +44,21 @@ public final class FlooCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage("§cUsage: /floo create <name>");
                     return true;
                 }
-                String name = args[1];
-                Location target = player.getTargetBlockExact(6) == null ? player.getLocation() : player.getTargetBlockExact(6).getLocation().clone().add(0.5, 0.0, 0.5);
-                BlockType type = BlockType.from(target.getBlock().getType());
-                if (!type.isPortal()) {
+
+                Block targetBlock = player.getTargetBlockExact(6);
+                if (targetBlock == null) {
                     player.sendMessage("§cYou need to look at a fire, campfire, or soul campfire to create a Floo fireplace.");
                     return true;
                 }
-                plugin.getManager().addFireplace(name, target);
-                player.sendMessage("§aFloo fireplace §f" + name + " §acreated.");
+
+                Location target = targetBlock.getLocation().clone().add(0.5, 0.0, 0.5);
+                if (!BlockType.from(targetBlock.getType()).isPortal()) {
+                    player.sendMessage("§cYou need to look at a fire, campfire, or soul campfire to create a Floo fireplace.");
+                    return true;
+                }
+
+                plugin.getManager().addFireplace(args[1], target);
+                player.sendMessage("§aFloo fireplace §f" + args[1] + " §acreated.");
             }
             case "remove" -> {
                 if (args.length < 2) {
@@ -116,11 +122,11 @@ public final class FlooCommand implements CommandExecutor, TabCompleter {
         SOUL_FIRE,
         NONE;
 
-        static BlockType from(org.bukkit.Material material) {
-            if (material == org.bukkit.Material.FIRE || material == org.bukkit.Material.SOUL_FIRE) {
+        static BlockType from(Material material) {
+            if (material == Material.FIRE || material == Material.SOUL_FIRE) {
                 return FIRE;
             }
-            if (material == org.bukkit.Material.CAMPFIRE || material == org.bukkit.Material.SOUL_CAMPFIRE) {
+            if (material == Material.CAMPFIRE || material == Material.SOUL_CAMPFIRE) {
                 return CAMPFIRE;
             }
             return NONE;

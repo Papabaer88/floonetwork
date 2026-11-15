@@ -9,8 +9,13 @@ public final class FlooNetworkPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         this.manager = new FlooManager(this);
-        getCommand("floo").setExecutor(new FlooCommand(this));
-        getCommand("floo").setTabCompleter(new FlooCommand(this));
+
+        var flooCommand = getCommand("floo");
+        if (flooCommand != null) {
+            flooCommand.setExecutor(new FlooCommand(this));
+            flooCommand.setTabCompleter(new FlooCommand(this));
+        }
+
         getServer().getPluginManager().registerEvents(new FlooListener(this), this);
         getLogger().info("FlooNetwork enabled on Paper 1.21.3");
     }
